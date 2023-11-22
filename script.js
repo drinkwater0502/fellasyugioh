@@ -177,6 +177,7 @@ app.post('/login', (req, res) => {
 
   // Check the secret code against your database or some predefined values
   if (secretCode === process.env.ODDLUPE_CODE) {
+    console.log('found me')
     req.session.user = '347702235498545152'; // me **************
     res.redirect('/home');
   } else if (secretCode === process.env.JAMES_CODE) {
