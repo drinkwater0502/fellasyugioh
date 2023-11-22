@@ -152,8 +152,14 @@ app.get('/', (req, res) => {
 })
 
 app.get('/home', async (req, res) => {
-  let userData = await getUserData(req.session.user)
-  res.render('index.ejs', { credits: userData['credits'], discordTag: userData['discordTag'] })
+  try {
+    let userData = await getUserData(req.session.user)
+    res.render('index.ejs', { credits: userData['credits'], discordTag: userData['discordTag'] })
+  } catch (error) {
+    console.log(error)
+    res.render('index.ejs', { credits: 'unknown', discordTag: 'unknown' })
+  }
+
 })
 
 app.get('/trade', (req, res) => {
