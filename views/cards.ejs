@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+  <title>Cards</title>
+</head>
+<body>
+  <%- include('partials/header'); %>
+  <h1><%= discordTag %> cards</h1>
+  <button id="saveDeckButton">Save</button>
+  <h2>Inventory</h2>
+  <div class="container" id="inventoryID">
+    <% inventory.forEach(card => { %>
+      <img src="https://d2yhutf68q06qd.cloudfront.net/cards_full/<%= card %>.jpg" alt="<%= card %>" class="draggable resized-image" draggable="true">
+    <% }); %>
+  </div>
+  <h2>Main Deck</h2>
+  <div class="container" id="maindeckID">
+    <% maindeck.forEach(card => { %>
+      <img src="https://d2yhutf68q06qd.cloudfront.net/cards_full/<%= card %>.jpg" alt="<%= card %>" class="draggable resized-image" draggable="true">
+    <% }); %>
+  </div>
+  <h2>Extra Deck</h2>
+  <div class="container" id="extradeckID">
+    <% extradeck.forEach(card => { %>
+      <img src="https://d2yhutf68q06qd.cloudfront.net/cards_full/<%= card %>.jpg" alt="<%= card %>" class="draggable resized-image" draggable="true">
+    <% }); %>
+  </div>
+  <h2>Side Deck</h2>
+  <div class="container" id="sidedeckID">
+    <% sidedeck.forEach(card => { %>
+      <img src="https://d2yhutf68q06qd.cloudfront.net/cards_full/<%= card %>.jpg" alt="<%= card %>" class="draggable resized-image" draggable="true">
+    <% }); %>
+  </div>
+
+</body>
+</html>
