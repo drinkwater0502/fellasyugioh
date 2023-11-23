@@ -9,5 +9,13 @@
 <body>
   <%- include('partials/header'); %>
   <h1>Buy</h1>
+  <div class="packcontainer">
+    <img src="https://d2yhutf68q06qd.cloudfront.net/packs/blue_eyes_pack.jpg" alt="blue eyes pack" class="packimage">
+    <% if (packsLeft > 0) { %>
+      <button type="button" >Free Pack</button>
+    <%} else { %>
+      <button type="button" disabled>Free Pack</button>
+    <% } %>
+  </div>
 </body>
 </html>

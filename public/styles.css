@@ -56,3 +56,7 @@ height: auto; /* Maintain the aspect ratio */
 .deckfile {
     background-color: #9c8a59
 }
+
+.packimage {
+    width: 100px;
+}

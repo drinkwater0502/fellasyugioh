@@ -140,6 +140,7 @@ const requireAuth = (req, res, next) => {
   }
 };
 
+app.use('/', requireAuth);
 app.use('/home', requireAuth);
 app.use('/cards', requireAuth);
 app.use('/trade', requireAuth);
@@ -157,7 +158,7 @@ app.get('/home', async (req, res) => {
     res.render('index.ejs', { credits: userData['credits'], discordTag: userData['discordTag'] })
   } catch (error) {
     console.log(error)
-    res.render('index.ejs', { credits: 'unknown', discordTag: 'unknown' })
+    res.render('login.ejs')
   }
 
 })
@@ -166,8 +167,14 @@ app.get('/trade', (req, res) => {
   res.render('trade.ejs')
 })
 
-app.get('/buy', (req, res) => {
-  res.render('buy.ejs')
+app.get('/buy', async(req, res) => {
+  try {
+    let userData = await getUserData(req.session.user)
+    res.render('buy.ejs', { credits: userData['credits'], discordTag: userData['discordTag'], packsLeft: userData['packs_left'] })
+  } catch (error) {
+    console.log(error)
+  }
+
 })
 
 app.get('/sell', (req, res) => {
@@ -183,29 +190,35 @@ app.post('/login', (req, res) => {
 
   // Check the secret code against your database or some predefined values
   if (secretCode === process.env.ODDLUPE_CODE) {
-    console.log('found me')
+    console.log('i logged in')
     req.session.user = '347702235498545152'; // me **************
     res.redirect('/home');
   } else if (secretCode === process.env.JAMES_CODE) {
+    console.log('james logged in')
     req.session.user = '211529348740677633'; // james
     res.redirect('/home');
   } else if (secretCode === process.env.CANON_CODE) {
+    console.log('canon logged in')
     req.session.user = '705263315999391764'; // canon
     res.redirect('/home');
   } 
   else if (secretCode === process.env.JASON_CODE) {
+    console.log('jason logged in')
     req.session.user = '265601692559474691'; // jason
     res.redirect('/home');
   } 
   else if (secretCode === process.env.MAZIN_CODE) {
+    console.log('mazin logged in')
     req.session.user = '166691275959959552'; // mazin
     res.redirect('/home');
   } 
   else if (secretCode === process.env.NOAH_CODE) {
+    console.log('noah logged in')
     req.session.user = '644389392697524224'; // noah
     res.redirect('/home');
   } 
   else if (secretCode === process.env.JOSH_CODE) {
+    console.log('josh logged in')
     req.session.user = '210533406755389443'; // josh
     res.redirect('/home');
   } 
