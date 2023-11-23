@@ -140,7 +140,6 @@ const requireAuth = (req, res, next) => {
   }
 };
 
-app.use('/', requireAuth);
 app.use('/home', requireAuth);
 app.use('/cards', requireAuth);
 app.use('/trade', requireAuth);
