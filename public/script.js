@@ -38,8 +38,12 @@ function getDragAfterElement(container, y) {
   }, { offset: Number.NEGATIVE_INFINITY }).element
 }
 
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 // get all cards currently on page (after pressing save)
-const saveButton = document.getElementById('saveDeckButton')
+let saveButton = document.getElementById('saveDeckButton')
 saveButton.addEventListener('click', function () {
   let inventoryCards = document.querySelectorAll('#inventoryID img')
   let mainDeckCards = document.querySelectorAll('#maindeckID img')
@@ -68,3 +72,4 @@ saveButton.addEventListener('click', function () {
       console.error('Error:', error);
   });
 })
+

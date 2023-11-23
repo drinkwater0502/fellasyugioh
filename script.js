@@ -1,7 +1,8 @@
 const express = require('express');
 const mysql = require('mysql2/promise')
 const bodyParser = require('body-parser');
-const session = require('express-session')
+const session = require('express-session');
+const MemoryStore = require('memorystore')(session)
 require('dotenv').config();
 
 const pool = mysql.createPool({
@@ -106,8 +107,6 @@ async function getUserData(discordID) {
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
-
-
     let [rows, fields] = await connection.query(`SELECT * FROM credits WHERE discordID = ${discordID}`);
 
     await connection.commit();
@@ -125,12 +124,95 @@ async function getUserData(discordID) {
   }
 }
 
+async function noReturnQuery(querystring) {
+  let connection
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    await connection.query(querystring);
+
+    await connection.commit();
+    await connection.release();
+  } catch (error) {
+    // Rollback the transaction in case of an error
+    if (connection) {
+      await connection.rollback();
+      await connection.release();
+    }
+    console.error('Error:', error);
+    return null;
+  }
+}
+
+async function getCardsFromPack(packName, indexArray) {
+  let connection
+  let cardArray = []
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    await Promise.all(
+      indexArray.map(async tableindex => {
+        let [rows, fields] = await connection.query(`SELECT CardID FROM ${packName} WHERE id = ${tableindex}`)
+        cardArray.push(rows[0]['CardID'])
+      })
+    )
+    await connection.commit();
+    await connection.release();
+    return cardArray
+  } catch (error) {
+    // Rollback the transaction in case of an error
+    if (connection) {
+      await connection.rollback();
+      await connection.release();
+    }
+
+    console.error('Error:', error);
+    return null;
+  }
+}
+
+async function insertMultipleToTable(tablename, array) {
+  let connection
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    await Promise.all(
+      array.map(async cardID => {
+        await connection.query(`INSERT INTO ${tablename} (id, CardID) VALUES (NULL, ?)`, [Number(cardID)])
+      })
+    )
+    await connection.commit();
+    await connection.release();
+  } catch (error) {
+    // Rollback the transaction in case of an error
+    if (connection) {
+      await connection.rollback();
+      await connection.release();
+    }
+
+    console.error('Error:', error);
+    return null;
+  }
+}
+
 const app = express();
 app.set('view-engine', 'ejs')
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
+// app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store: new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    }),
+  })
+);
 
 const requireAuth = (req, res, next) => {
   if (req.session.user) {
@@ -146,6 +228,15 @@ app.use('/trade', requireAuth);
 app.use('/buy', requireAuth);
 app.use('/sell', requireAuth);
 app.use('/deckfile', requireAuth);
+app.use((req, res, next) => {
+  // no caching for /buy
+  if (req.url === '/buy') {
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.header('Expires', '0');
+  }
+  next();
+})
 
 app.get('/', (req, res) => {
   res.redirect('/home')
@@ -239,6 +330,24 @@ app.post('/sendData', async (req, res) => {
   const sideDeckData = req.body.sideDeckData
   await updateAllUserCards(req.session.user, inventoryData, mainDeckData, extraDeckData, sideDeckData)
   
+  res.redirect('/cards')
+})
+
+app.post('/boughtblueeyes', async (req, res) => {
+  // receive random card indexes from fetch
+  const randomCardIndexes = req.body.cardIndexes
+  console.log(randomCardIndexes)
+
+  // change free packs from 1 to 0
+  await noReturnQuery(`UPDATE credits SET packs_left = 0 WHERE discordID = ${req.session.user}`)
+
+  // get the 9 card ID's using the random indexes
+  let packArray = await getCardsFromPack('blue_eyes_pack', randomCardIndexes)
+
+  // insert cards into inventory
+  await insertMultipleToTable(`${req.session.user}_inventory`, packArray)
+
+  // redirect to buy page
   res.redirect('/cards')
 })
 

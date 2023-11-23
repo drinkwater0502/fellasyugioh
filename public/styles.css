@@ -20,7 +20,7 @@ opacity: 0.5;
 }
 
 .resized-image {
-width: 75px; /* Adjust the percentage or use a specific value */
+width: 125px; /* Adjust the percentage or use a specific value */
 height: auto; /* Maintain the aspect ratio */
 }
 
@@ -59,4 +59,11 @@ height: auto; /* Maintain the aspect ratio */
 
 .packimage {
     width: 100px;
+}
+
+.packcontainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
 }

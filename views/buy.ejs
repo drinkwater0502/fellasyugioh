@@ -9,13 +9,51 @@
 <body>
   <%- include('partials/header'); %>
   <h1>Buy</h1>
+  <h2>You have <%=packsLeft %> free pack(s)</h2>
   <div class="packcontainer">
     <img src="https://d2yhutf68q06qd.cloudfront.net/packs/blue_eyes_pack.jpg" alt="blue eyes pack" class="packimage">
     <% if (packsLeft > 0) { %>
-      <button type="button" >Free Pack</button>
+      <button id="buyblueeyes">Free Pack</button>
     <%} else { %>
-      <button type="button" disabled>Free Pack</button>
+      <button disabled>Free Pack</button>
     <% } %>
   </div>
+  <div id="newcards">
+
+  </div>
+  <script>
+    function getRandomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('click', function(event) {
+        if (event.target.id === 'buyblueeyes') {
+          let randomCardIndexes = [];
+          for (let i = 0; i < 9; i++) {
+            const randomNumber = getRandomNumber(1, 125);
+            randomCardIndexes.push(randomNumber);
+          }
+          fetch('/boughtblueeyes', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cardIndexes: randomCardIndexes }),
+          })
+          .then(response => {
+            if (response.ok) {
+              // Redirect to the desired path after a successful response
+              window.location.href = '/cards';
+            } else {
+              console.error('Failed to send data to the server');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
