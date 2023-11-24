@@ -1,11 +1,115 @@
-.body {
-    margin: 0;
+body {
+margin: 0;
+background-color: 	#e7e7e7;
+color: #aeaeae;
 }
 
-.container {
-background-color: #333;
+.yugi-mode {
+background-color: #003287;
+color: #ffc100;
+}
+
+.container,
+body.yugi-mode .container {
 padding: 1rem;
-margin-top: 1rem;
+margin: 1rem;
+background-color:#102249;
+}
+
+body.yugi-mode .container {
+background-color: #11007e;
+}
+
+header {
+margin: 0;
+padding: 0;
+}
+
+.navbar,
+body.yugi-mode .navbar {
+overflow: hidden;
+background-color: #631d3d;
+margin: 0;
+padding: 0;
+}
+
+body.yugi-mode .navbar {
+background-color: #ffc100;
+}
+
+.navbar a,
+body.yugi-mode .navbar a {
+float: left;
+font-size: 16px;
+color: white;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+}
+
+body.yugi-mode .navbar a {
+color: black;
+font-weight: bold;
+}
+
+.dropdown {
+float: left;
+overflow: hidden;
+}
+
+.dropdown .dropbtn {
+font-size: 16px;  
+border: none;
+outline: none;
+color: white;
+padding: 14px 16px;
+background-color: inherit;
+font-family: inherit;
+margin: 0;
+}
+
+body.yugi-mode .dropdown .dropbtn {
+color: black;
+font-weight: bold;
+}
+
+.navbar a:hover, 
+.dropdown:hover .dropbtn {
+background-color: white;
+color: black;
+}
+
+body.yugi-mode .navbar a:hover, 
+body.yugi-mode .dropdown:hover .dropbtn {
+background-color: #9a0056;
+color: white;
+}
+
+.dropdown-content {
+display: none;
+position: absolute;
+background-color: #f9f9f9;
+min-width: 160px;
+/* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
+z-index: 1;
+}
+
+.dropdown-content a,
+body.yugi-mode .dropdown-content a {
+float: none;
+color: black;
+padding: 12px 16px;
+text-decoration: none;
+display: block;
+text-align: left;
+}
+
+.dropdown-content a:hover {
+background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+display: block;
 }
 
 .draggable {
@@ -22,35 +126,6 @@ opacity: 0.5;
 .resized-image {
 width: 125px; /* Adjust the percentage or use a specific value */
 height: auto; /* Maintain the aspect ratio */
-}
-
-/* Add this CSS to your stylesheet or in a <style> tag in your HTML file */
-.navbar {
-    background-color: #333; /* Set the background color */
-  }
-  
-.navbar ul {
-    list-style-type: none; /* Remove bullet points from the list */
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
-.navbar li {
-    float: left; /* Make list items float horizontally */
-}
-
-.navbar a {
-    display: block;
-    color: white; /* Set the text color */
-    text-align: center;
-    padding: 14px 16px; /* Add some padding around the links */
-    text-decoration: none;
-}
-
-.navbar a:hover {
-    background-color: #ddd; /* Change the background color on hover */
-    color: black; /* Change text color on hover */
 }
 
 .deckfile {

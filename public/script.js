@@ -1,6 +1,30 @@
 const draggables = document.querySelectorAll('.draggable')
 const containers = document.querySelectorAll('.container')
 
+// check every refresh if localstorage if yugiMode = true
+const isYugiMode = localStorage.getItem('yugiMode');
+if (isYugiMode === 'true') {
+    document.body.classList.add('yugi-mode');
+} else {
+  document.body.classList.remove('yugi-mode');
+}
+
+function toggleYugiMode() {
+  document.body.classList.add('yugi-mode')
+  localStorage.setItem('yugiMode', true)
+}
+
+function toggleKaibaMode() {
+  document.body.classList.remove('yugi-mode')
+  localStorage.setItem('yugiMode', false)
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  // change color palette depending on user choice
+
+
+});
+
 draggables.forEach(draggable => {
   draggable.addEventListener('dragstart', () => {
     draggable.classList.add('dragging')
@@ -72,4 +96,5 @@ saveButton.addEventListener('click', function () {
       console.error('Error:', error);
   });
 })
+
 
