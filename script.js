@@ -351,9 +351,6 @@ app.post('/boughtblueeyes', async (req, res) => {
   res.redirect('/cards')
 })
 
-app.get('/test', (req, res) => {
-  res.send('Test Page');
-});
 
 app.get('/deckfile', async (req, res) => {
   let deckfilestring = '#created by THE FELLAS CASINO<br>#main<br>'
@@ -368,6 +365,7 @@ app.get('/deckfile', async (req, res) => {
 })
 
 app.get('/logout', (req, res) => {
+  console.log(`${req.session.user} logged out`)
   req.session.destroy(); // Destroy the session to log out the user
   res.redirect('/login');
 });

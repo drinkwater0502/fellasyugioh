@@ -1,5 +1,7 @@
 const draggables = document.querySelectorAll('.draggable')
-const containers = document.querySelectorAll('.container')
+let containers = document.querySelectorAll('.container')
+var overlay = document.querySelector('.enlarged-image-overlay');
+var enlargedImage = document.querySelector('.enlarged-image');
 
 // check every refresh if localstorage if yugiMode = true
 const isYugiMode = localStorage.getItem('yugiMode');
@@ -21,19 +23,30 @@ function toggleKaibaMode() {
 
 document.addEventListener('DOMContentLoaded', function () {
   // change color palette depending on user choice
-
+  console.log('all dom content loaded')
 
 });
 
 draggables.forEach(draggable => {
   draggable.addEventListener('dragstart', () => {
+    console.log('started dragging')
     draggable.classList.add('dragging')
   })
 
   draggable.addEventListener('dragend', () => {
+    console.log('stopped dragging')
     draggable.classList.remove('dragging')
   })
+
+  draggable.addEventListener('click', function () {
+    var enlargedSrc = this.getAttribute('src');
+    showEnlargedPopup(enlargedSrc);
+  })
 })
+
+overlay.addEventListener('click', function () {
+  hideEnlargedPopup();
+});
 
 containers.forEach(container => {
   container.addEventListener('dragover', e => {
@@ -97,4 +110,21 @@ saveButton.addEventListener('click', function () {
   });
 })
 
+function showEnlargedPopup(src) {
+  enlargedImage.src = src;
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden'; // Disable scrolling on the main content
 
+  // Increase the size of the image
+  enlargedImage.style.width = '30%'; // Adjust the width as needed
+  enlargedImage.style.height = 'auto'; // Maintain the aspect ratio
+}
+
+function hideEnlargedPopup() {
+  overlay.style.display = 'none';
+  document.body.style.overflow = 'auto'; // Enable scrolling on the main content
+
+  // Reset the size of the image
+  enlargedImage.style.width = ''; // Reset to default size
+  enlargedImage.style.height = ''; // Reset to default size
+}
