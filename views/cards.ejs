@@ -14,25 +14,25 @@
     <h1><%= discordTag %> cards</h1>
     <button id="saveDeckButton">Save</button>
   </div>
-  <div class="container" id="inventoryID">
+  <div class="cardcontainer" id="inventoryID">
     <h2>Inventory</h2>
     <% inventory.forEach(card => { %>
       <img src="https://d2yhutf68q06qd.cloudfront.net/cards_full/<%= card %>.jpg" alt="<%= card %>" class="draggable resized-image" draggable="true">
     <% }); %>
   </div>
-  <div class="container" id="maindeckID">
+  <div class="cardcontainer" id="maindeckID">
     <h2>Main Deck</h2>
     <% maindeck.forEach(card => { %>
       <img src="https://d2yhutf68q06qd.cloudfront.net/cards_full/<%= card %>.jpg" alt="<%= card %>" class="draggable resized-image" draggable="true">
     <% }); %>
   </div>
-  <div class="container" id="extradeckID">
+  <div class="cardcontainer" id="extradeckID">
     <h2>Extra Deck</h2>
     <% extradeck.forEach(card => { %>
       <img src="https://d2yhutf68q06qd.cloudfront.net/cards_full/<%= card %>.jpg" alt="<%= card %>" class="draggable resized-image" draggable="true">
     <% }); %>
   </div>
-  <div class="container" id="sidedeckID">
+  <div class="cardcontainer" id="sidedeckID">
     <h2>Side Deck</h2>
     <% sidedeck.forEach(card => { %>
       <img src="https://d2yhutf68q06qd.cloudfront.net/cards_full/<%= card %>.jpg" alt="<%= card %>" class="draggable resized-image" draggable="true">

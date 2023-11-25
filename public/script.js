@@ -1,5 +1,5 @@
 const draggables = document.querySelectorAll('.draggable')
-let containers = document.querySelectorAll('.container')
+let containers = document.querySelectorAll('.cardcontainer')
 var overlay = document.querySelector('.enlarged-image-overlay');
 var enlargedImage = document.querySelector('.enlarged-image');
 
