@@ -15,32 +15,33 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-async function getAllUserCards(discordTag) {
+async function getAllUserCards(discordID) {
+  let connection
   try {
-    let connection = await pool.getConnection();
+    connection = await pool.getConnection();
     console.log('Connected to MySQL database');
     await connection.beginTransaction();
     let allUserCardsArray = []
 
-    let [inventoryRows] = await connection.query(`SELECT * FROM ${discordTag}_inventory`);
-    let [maindeckRows] = await connection.query(`SELECT * FROM ${discordTag}_maindeck`);
-    let [extradeckRows] = await connection.query(`SELECT * FROM ${discordTag}_extradeck`);
-    let [sidedeckRows] = await connection.query(`SELECT * FROM ${discordTag}_sidedeck`);
+    let [inventoryRows] = await connection.query(`SELECT * FROM fellas_cards WHERE discordID = ${discordID} AND location = 'inventory'`);
+    let [maindeckRows] = await connection.query(`SELECT * FROM fellas_cards WHERE discordID = ${discordID} AND location = 'main'`);
+    let [extradeckRows] = await connection.query(`SELECT * FROM fellas_cards WHERE discordID = ${discordID} AND location = 'extra'`);
+    let [sidedeckRows] = await connection.query(`SELECT * FROM fellas_cards WHERE discordID = ${discordID} AND location = 'side'`);
 
     let inventoryIDS = []
-    inventoryRows.forEach(card => inventoryIDS.push(card['CardID']))
+    inventoryRows.forEach(card => inventoryIDS.push(card['cardID']))
     allUserCardsArray.push(inventoryIDS)
 
     let maindeckIDS = []
-    maindeckRows.forEach(card => maindeckIDS.push(card['CardID']))
+    maindeckRows.forEach(card => maindeckIDS.push(card['cardID']))
     allUserCardsArray.push(maindeckIDS)
 
     let extradeckIDS = []
-    extradeckRows.forEach(card => extradeckIDS.push(card['CardID']))
+    extradeckRows.forEach(card => extradeckIDS.push(card['cardID']))
     allUserCardsArray.push(extradeckIDS)
 
     let sidedeckIDS = []
-    sidedeckRows.forEach(card => sidedeckIDS.push(card['CardID']))
+    sidedeckRows.forEach(card => sidedeckIDS.push(card['cardID']))
     allUserCardsArray.push(sidedeckIDS)
 
     await connection.commit()
@@ -60,29 +61,26 @@ async function getAllUserCards(discordTag) {
   }
 }
 
-async function updateAllUserCards(discordTag, inventory, maindeck, extradeck, sidedeck) {
+async function updateAllUserCards(discordID, inventory, maindeck, extradeck, sidedeck) {
   let connection
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    await connection.query(`DELETE FROM ${discordTag}_inventory`);
-    await connection.query(`DELETE FROM ${discordTag}_maindeck`);
-    await connection.query(`DELETE FROM ${discordTag}_extradeck`);
-    await connection.query(`DELETE FROM ${discordTag}_sidedeck`);
+    await connection.query(`DELETE FROM fellas_cards WHERE discordID = '${discordID}'`);
 
     await Promise.all(
       inventory.map(async cardID => {
-        await connection.query(`INSERT INTO ${discordTag}_inventory (id, CardID) VALUES (NULL, ?)`, [Number(cardID)]);
+        await connection.query(`INSERT INTO fellas_cards (id, discordID, cardID, location) VALUES (NULL, ?, ?, 'inventory')`, [String(discordID), Number(cardID)]);
       }),
       maindeck.map(async cardID => {
-        await connection.query(`INSERT INTO ${discordTag}_maindeck (id, CardID) VALUES (NULL, ?)`, [Number(cardID)]);
+        await connection.query(`INSERT INTO fellas_cards (id, discordID, cardID, location) VALUES (NULL, ?, ?, 'main')`, [discordID, Number(cardID)]);
       }),
       extradeck.map(async cardID => {
-        await connection.query(`INSERT INTO ${discordTag}_extradeck (id, CardID) VALUES (NULL, ?)`, [Number(cardID)]);
+        await connection.query(`INSERT INTO fellas_cards (id, discordID, cardID, location) VALUES (NULL, ?, ?, 'extra')`, [discordID, Number(cardID)]);
       }),
       sidedeck.map(async cardID => {
-        await connection.query(`INSERT INTO ${discordTag}_sidedeck (id, CardID) VALUES (NULL, ?)`, [Number(cardID)]);
+        await connection.query(`INSERT INTO fellas_cards (id, discordID, cardID, location) VALUES (NULL, ?, ?, 'side')`, [discordID, Number(cardID)]);
       })
     );
 
@@ -172,7 +170,7 @@ async function getCardsFromPack(packName, indexArray) {
   }
 }
 
-async function insertMultipleToTable(tablename, array) {
+async function insertMultipleToFellasCards(discordID, array, location) {
   let connection
   try {
     connection = await pool.getConnection();
@@ -180,7 +178,7 @@ async function insertMultipleToTable(tablename, array) {
 
     await Promise.all(
       array.map(async cardID => {
-        await connection.query(`INSERT INTO ${tablename} (id, CardID) VALUES (NULL, ?)`, [Number(cardID)])
+        await connection.query(`INSERT INTO fellas_cards (id, discordID, cardID, location) VALUES (NULL, ?, ?, ?)`, [String(discordID), Number(cardID), String(location)])
       })
     )
     await connection.commit();
@@ -338,14 +336,19 @@ app.post('/boughtblueeyes', async (req, res) => {
   const randomCardIndexes = req.body.cardIndexes
   console.log(randomCardIndexes)
 
-  // change free packs from 1 to 0
-  await noReturnQuery(`UPDATE credits SET packs_left = 0 WHERE discordID = ${req.session.user}`)
+  // check that free packs is higher than 0
+  let userData = await getUserData(req.session.user)
+  let packsLeft = Number(userData['packs_left'])
+  if (packsLeft > 0) {
+    // change free packs from 1 to 0
+    await noReturnQuery(`UPDATE credits SET packs_left = 0 WHERE discordID = ${req.session.user}`)
 
-  // get the 9 card ID's using the random indexes
-  let packArray = await getCardsFromPack('blue_eyes_pack', randomCardIndexes)
+    // get the 9 card ID's using the random indexes
+    let packArray = await getCardsFromPack('blue_eyes_pack', randomCardIndexes)
 
-  // insert cards into inventory
-  await insertMultipleToTable(`${req.session.user}_inventory`, packArray)
+    // insert cards into inventory
+    await insertMultipleToFellasCards(req.session.user, packArray, 'inventory')
+  }
 
   // redirect to buy page
   res.redirect('/cards')

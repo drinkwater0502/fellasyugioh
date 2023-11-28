@@ -20,6 +20,17 @@ body.yugi-mode .container {
 background-color: #11007e;
 }
 
+.cardcontainer,
+body.yugi-mode .cardcontainer {
+padding: 1rem;
+margin: 1rem;
+background-color:#102249;
+}
+
+body.yugi-mode .cardcontainer {
+background-color: #11007e;
+}
+
 header {
 margin: 0;
 padding: 0;
